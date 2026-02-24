@@ -14,7 +14,7 @@ export const getAllTasks = async (req: Request, res: Response) => {
         const db = getDatabase();
         const tasks = await db
             .collection<Task>(COLLECTION_NAME)
-            .find()
+            .find({ userId: new ObjectId(req.userId) })
             .sort({ createdAt: -1 }) // Mais recentes primeiro
             .toArray();
 
@@ -40,6 +40,7 @@ export const createTask = async (req: Request, res: Response) => {
         const db = getDatabase();
 
         const newTask: Omit<Task, '_id'> = {
+            userId: new ObjectId(req.userId),
             title,
             description: description || '',
             subject,
@@ -99,7 +100,10 @@ export const updateTask = async (req: Request<TaskParams>, res: Response) => {
         const result = await db
             .collection<Task>(COLLECTION_NAME)
             .findOneAndUpdate(
-                { _id: new ObjectId(id) },
+                { 
+                    _id: new ObjectId(id),
+                    userId: new ObjectId(req.userId)
+                },
                 { $set: updateData },
                 { returnDocument: 'after' }
             );
@@ -145,7 +149,10 @@ export const deleteTask = async (req: Request<TaskParams>, res: Response) => {
         // Deletar a task
         const result = await db
           .collection<Task>(COLLECTION_NAME)
-          .deleteOne({ _id: new ObjectId(id) });
+          .deleteOne({ 
+            _id: new ObjectId(id),
+            userId: new ObjectId(req.userId)
+         });
     
         // Se não encontrou/deletou nenhuma task
         if (result.deletedCount === 0) {

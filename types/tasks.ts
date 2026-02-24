@@ -2,6 +2,7 @@ import { ObjectId } from 'mongodb';
 
 export interface Task {
   _id?: ObjectId;
+  userId: ObjectId;
   title: string;
   description?: string;
   subject: string; // tema de estudo (ex: "JavaScript", "Banco de Dados")
