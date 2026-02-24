@@ -11,17 +11,39 @@ interface TaskParams {
 
 export const getAllTasks = async (req: Request, res: Response) => {
     try {
+        // Pegar parâmetros da query (com valores padrão)
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 10;
+        
+        // Calcular quantos documentos pular
+        const skip = (page - 1) * limit;
+
         const db = getDatabase();
-        const tasks = await db
-            .collection<Task>(COLLECTION_NAME)
-            .find({ userId: new ObjectId(req.userId) })
-            .sort({ createdAt: -1 }) // Mais recentes primeiro
-            .toArray();
+        
+        // Buscar tasks COM paginação + contar total
+        const [tasks, total] = await Promise.all([
+            db.collection<Task>(COLLECTION_NAME)
+                .find({ userId: new ObjectId(req.userId) })
+                .sort({ createdAt: -1 })
+                .skip(skip)     
+                .limit(limit)   
+                .toArray(),
+            
+            db.collection<Task>(COLLECTION_NAME)
+                .countDocuments({ userId: new ObjectId(req.userId) })
+        ]);
 
         res.status(200).json({
             success: true,
-            count: tasks.length,
-            data: tasks
+            data: tasks,
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit),
+                hasNextPage: page < Math.ceil(total / limit),
+                hasPrevPage: page > 1
+            }
         });
     } catch (error) {
         console.error('Erro ao buscar tasks:', error);
