@@ -3,12 +3,13 @@ import express, { type Request, type Response } from 'express';
 import { connectDatabase } from './config/database.js';
 import taskRoutes from './routes/tasksRoutes.js'
 import authRoutes from './routes/authRoutes.js';
+import { apiKeyMiddleware } from './middlewares/apiKeyMiddleware.js';
 
 const app = express()
 const port = 3000
 
-//Middleware 
 app.use(express.json());
+app.use(apiKeyMiddleware);
 
 // públicas 
 app.use('/api/auth', authRoutes);
