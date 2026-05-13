@@ -9,11 +9,12 @@ if (!JWT_SECRET) {
 export interface JwtPayload {
   userId: string;
   email: string;
+    name: string;
 }
 
 export const generateToken = (payload: JwtPayload): string => {
   return jwt.sign(payload, JWT_SECRET, {
-    expiresIn: '7d' // Token expira em 7 dias
+    expiresIn: '1d' // Token expira em 1 dias
   });
 };
 
