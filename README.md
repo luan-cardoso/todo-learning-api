@@ -8,7 +8,6 @@ API REST para **gerenciar tarefas de estudo (todo)** com **autenticação (JWT)*
 - **CRUD de tasks** vinculadas ao usuário autenticado (`/api/tasks`)
 - **Paginação** na listagem de tasks (`page` e `limit`)
 - **Segurança em 2 camadas**:
-  - **API Key** obrigatória em **todas** as rotas (`x-api-key`)
   - **JWT Bearer token** obrigatório nas rotas protegidas (`Authorization: Bearer ...`)
 
 ## Stack
